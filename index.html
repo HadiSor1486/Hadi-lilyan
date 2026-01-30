@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Our Secret Capsule</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --beige-light: #FAF7F2;
+            --beige: #F5EDE4;
+            --beige-dark: #E8DFD4;
+            --brown-light: #C4B5A4;
+            --brown: #9C8B7A;
+            --brown-dark: #6B5D4D;
+            --white: #FFFFFF;
+            --rose: #D4A5A5;
+            --rose-light: #F0E0E0;
+            --text-primary: #4A4240;
+            --text-secondary: #7A7270;
+            --shadow-soft: 0 4px 20px rgba(74, 66, 64, 0.08);
+            --shadow-medium: 0 8px 30px rgba(74, 66, 64, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--beige-light);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Login Screen */
+        .login-container {
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: var(--shadow-medium);
+            padding: 50px 40px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--rose) 0%, var(--brown-light) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 36px;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .login-container h1 {
+            font-size: 32px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .login-container .subtitle {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--beige-dark);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--beige-light);
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--brown-light);
+            background: var(--white);
+        }
+
+        .input-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brown) 0%, var(--brown-dark) 100%);
+            color: var(--white);
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 93, 77, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--beige);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--beige-dark);
+        }
+
+        .btn-rose {
+            background: linear-gradient(135deg, var(--rose) 0%, #C49494 100%);
+            color: var(--white);
+        }
+
+        .btn-rose:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 165, 165, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .link-btn {
+            background: none;
+            border: none;
+            color: var(--brown);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 20px;
+            font-family: inherit;
+        }
+
+        .link-btn:hover {
+            color: var(--brown-dark);
+        }
+
+        /* Message Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            transition: transform 0.4s ease;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            background: #D4EDDA;
+            color: #155724;
+            border: 1px solid #C3E6CB;
+        }
+
+        .toast.error {
+            background: #F8D7DA;
+            color: #721C24;
+            border: 1px solid #F5C6CB;
+        }
+
+        .toast.info {
+            background: #D1ECF1;
+            color: #0C5460;
+            border: 1px solid #BEE5EB;
+        }
+
+        /* Registration Screen */
+        .register-container {
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: var(--shadow-medium);
+            padding: 50px 40px;
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .register-container h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .register-container .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .profile-upload {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px dashed var(--beige-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: var(--beige-light);
+        }
+
+        .profile-upload:hover {
+            border-color: var(--brown-light);
+            background: var(--beige);
+        }
+
+        .profile-upload img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-upload .placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .profile-upload .placeholder span {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Main Dashboard */
+        .dashboard {
+            max-width: 800px;
+            width: 100%;
+            padding: 30px 20px;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            background: var(--white);
+            padding: 20px 28px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--beige-dark);
+        }
+
+        .user-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: none;
+            background: var(--beige);
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: var(--beige-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Countdown Timer */
+        .countdown-card {
+            background: linear-gradient(135deg, var(--rose-light) 0%, var(--beige) 100%);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .countdown-card h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .countdown-card .date {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            position: relative;
+        }
+
+        .countdown-item {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 16px 20px;
+            min-width: 80px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .countdown-item .number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--brown-dark);
+            line-height: 1;
+        }
+
+        .countdown-item .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .set-date-btn {
+            margin-top: 20px;
+            position: relative;
+        }
+
+        /* Entry Form */
+        .entry-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 24px;
+        }
+
+        .entry-card h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .media-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .media-btn {
+            padding: 12px 20px;
+            border: 2px solid var(--beige-dark);
+            border-radius: 12px;
+            background: var(--beige-light);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .media-btn:hover {
+            border-color: var(--brown-light);
+            background: var(--beige);
+        }
+
+        .media-btn.recording {
+            border-color: var(--rose);
+            background: var(--rose-light);
+            animation: pulse 1.5s infinite;
+        }
+
+        .media-btn.permission-needed {
+            border-color: #ffc107;
+            background: #fff8e1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .preview-area {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--beige-light);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .preview-area.active {
+            display: block;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .preview-audio {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .remove-btn {
+            padding: 8px 16px;
+            background: var(--rose);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .entry-stats {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: var(--beige-light);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-item .number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--brown-dark);
+        }
+
+        .stat-item .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Profile Edit Screen */
+        .profile-screen {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .profile-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .profile-card h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 32px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 12px 20px;
+            background: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: var(--beige);
+        }
+
+        /* Date Picker Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(74, 66, 64, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow-medium);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .modal .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        /* Microphone Permission Modal */
+        .mic-permission-info {
+            background: var(--beige-light);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .mic-permission-info ul {
+            margin: 10px 0 0 20px;
+        }
+
+        .mic-permission-info li {
+            margin-bottom: 6px;
+        }
+
+        /* Reveal Screen */
+        .reveal-screen {
+            max-width: 700px;
+            width: 100%;
+            padding: 30px 20px;
+        }
+
+        .reveal-screen.active {
+            display: block;
+        }
+
+        .reveal-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .reveal-header h1 {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .reveal-header p {
+            color: var(--text-secondary);
+        }
+
+        .conversation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message-item {
+            display: flex;
+            gap: 16px;
+            max-width: 85%;
+            animation: messageSlideIn 0.4s ease;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-item.right {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid var(--beige-dark);
+        }
+
+        .message-content {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 16px 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .message-item.right .message-content {
+            background: linear-gradient(135deg, var(--rose-light) 0%, var(--beige) 100%);
+        }
+
+        .message-text {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .message-image {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .message-image:hover {
+            transform: scale(1.02);
+        }
+
+        .message-audio {
+            width: 100%;
+            max-width: 280px;
+            margin-bottom: 8px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .message-author {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--brown);
+            margin-bottom: 4px;
+        }
+
+        /* Locked State */
+        .locked-message {
+            text-align: center;
+            padding: 60px 40px;
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .locked-message .lock-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .locked-message h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .locked-message p {
+            color: var(--text-secondary);
+        }
+
+        /* Decorative Elements */
+        .decoration {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        .decoration.top-right {
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--rose-light) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .decoration.bottom-left {
+            bottom: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--beige-dark) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .login-container,
+            .register-container,
+            .modal {
+                padding: 32px 24px;
+            }
+
+            .countdown-timer {
+                gap: 8px;
+            }
+
+            .countdown-item {
+                min-width: 60px;
+                padding: 12px 8px;
+            }
+
+            .countdown-item .number {
+                font-size: 28px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .media-buttons {
+                justify-content: center;
+            }
+
+            .entry-stats {
+                flex-wrap: wrap;
+            }
+
+            .message-item {
+                max-width: 95%;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--beige);
+            border-top-color: var(--brown);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Heart animation for reveal */
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.3;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--beige-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-heart {
+            font-size: 60px;
+            animation: heartbeat 1s ease-in-out infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+
+        /* Celebration confetti */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .celebration.active {
+            display: block;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--rose);
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100%) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-heart">&#10084;</div>
+        <div class="loading-text">Loading your capsule...</div>
+    </div>
+
+    <!-- Decorative Elements -->
+    <div class="decoration top-right"></div>
+    <div class="decoration bottom-left"></div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Celebration Container -->
+    <div id="celebration" class="celebration"></div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="logo">&#10084;</div>
+            <h1>Our Secret Capsule</h1>
+            <p class="subtitle">A secret place for our hearts to speak</p>
+            
+            <div class="input-group">
+                <label>Enter Your Password</label>
+                <input type="password" id="loginPassword" placeholder="Your secret password...">
+            </div>
+            
+            <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">
+                Enter Our Space
+            </button>
+            
+            <button class="link-btn" id="createAccountLink" onclick="showRegisterScreen()">
+                Create your account
+            </button>
+        </div>
+    </div>
+
+    <!-- Registration Screen -->
+    <div id="registerScreen" class="screen">
+        <div class="register-container">
+            <h1>Join Our Capsule</h1>
+            <p class="subtitle">Create your profile to start writing secret letters</p>
+            
+            <div class="profile-upload" id="profileUpload" onclick="document.getElementById('profileImageInput').click()">
+                <div class="placeholder" id="uploadPlaceholder">
+                    <span>&#128247;</span>
+                    Add Photo
+                </div>
+                <img id="profilePreview" style="display: none;">
+            </div>
+            <input type="file" id="profileImageInput" accept="image/*" style="display: none;" onchange="handleProfileImageSelect()">
+            
+            <div class="input-group">
+                <label>Your Name</label>
+                <input type="text" id="registerName" placeholder="What should I call you?">
+            </div>
+            
+            <div class="input-group">
+                <label>Create Password</label>
+                <input type="password" id="registerPassword" placeholder="Choose a secret password">
+            </div>
+            
+            <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Type it again">
+            </div>
+            
+            <button class="btn btn-rose" id="registerBtn" onclick="handleRegister()">
+                Create My Account
+            </button>
+            
+            <button class="link-btn" onclick="showLoginScreen()">
+                Already have an account? Sign in
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboardScreen" class="screen dashboard">
+        <div class="dashboard-header">
+            <div class="user-info">
+                <img id="dashboardAvatar" class="user-avatar" src="" alt="Your profile">
+                <div>
+                    <div class="user-name" id="dashboardName">Loading...</div>
+                    <div style="font-size: 13px; color: var(--text-secondary);">Welcome back</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="showProfileScreen()" title="Edit Profile">&#9881;</button>
+                <button class="icon-btn" onclick="showRevealScreen()" title="View Messages">&#128172;</button>
+                <button class="icon-btn" onclick="handleLogout()" title="Logout">&#10151;</button>
+            </div>
+        </div>
+
+        <!-- Countdown Timer -->
+        <div class="countdown-card">
+            <h2>Time Until Reveal</h2>
+            <div class="date" id="revealDateDisplay">No date set yet</div>
+            <div class="countdown-timer" id="countdownTimer">
+                <div class="countdown-item">
+                    <div class="number" id="countDays">--</div>
+                    <div class="label">Days</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="countHours">--</div>
+                    <div class="label">Hours</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="countMinutes">--</div>
+                    <div class="label">Minutes</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="countSeconds">--</div>
+                    <div class="label">Seconds</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary set-date-btn" id="setDateBtn" onclick="showDateModal()">
+                Set Reveal Date
+            </button>
+        </div>
+
+        <!-- Entry Stats -->
+        <div class="entry-stats">
+            <div class="stat-item">
+                <div class="number" id="myEntryCount">0</div>
+                <div class="label">Your Messages</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="partnerEntryCount">?</div>
+                <div class="label">Their Messages</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="totalEntryCount">0</div>
+                <div class="label">Total Notes</div>
+            </div>
+        </div>
+
+        <!-- Entry Form -->
+        <div class="entry-card">
+            <h3>&#10084; Write a Note</h3>
+            
+            <div class="input-group">
+                <label>Your Message</label>
+                <textarea id="entryText" placeholder="Write something from your heart... This will be revealed on our special day."></textarea>
+            </div>
+            
+            <div class="media-buttons">
+                <button class="media-btn" onclick="document.getElementById('entryImageInput').click()">
+                    &#128247; Add Photo
+                </button>
+                <button class="media-btn" id="voiceBtn" onclick="handleVoiceButtonClick()">
+                    &#127908; Record Voice
+                </button>
+            </div>
+            <input type="file" id="entryImageInput" accept="image/*" style="display: none;" onchange="handleEntryImageSelect()">
+            
+            <div class="preview-area" id="imagePreviewArea">
+                <img id="entryImagePreview" class="preview-image">
+                <button class="remove-btn" onclick="clearEntryImage()">Remove Photo</button>
+            </div>
+            
+            <div class="preview-area" id="audioPreviewArea">
+                <audio id="entryAudioPreview" class="preview-audio" controls></audio>
+                <button class="remove-btn" onclick="clearEntryAudio()">Remove Audio</button>
+            </div>
+            
+            <div id="recordingIndicator" style="display: none; color: var(--rose); font-weight: 600; margin: 12px 0;">
+                &#128308; Recording... <span id="recordingTime">0:00</span>
+            </div>
+            
+            <button class="btn btn-rose" id="submitEntryBtn" onclick="submitEntry()" style="width: 100%; margin-top: 20px;">
+                &#10084; Send to the Capsule
+            </button>
+            
+            <p style="text-align: center; font-size: 13px; color: var(--text-secondary); margin-top: 12px;">
+                Once sent, this message cannot be deleted or edited
+            </p>
+        </div>
+    </div>
+
+    <!-- Profile Edit Screen -->
+    <div id="profileScreen" class="screen">
+        <button class="back-btn" onclick="showDashboard()">&#8592; Back</button>
+        <div class="profile-screen">
+            <div class="profile-card">
+                <h2>Edit Your Profile</h2>
+                
+                <div class="profile-upload" onclick="document.getElementById('editProfileImageInput').click()">
+                    <div class="placeholder" id="editUploadPlaceholder">
+                        <span>&#128247;</span>
+                        Change Photo
+                    </div>
+                    <img id="editProfilePreview" style="display: none;">
+                </div>
+                <input type="file" id="editProfileImageInput" accept="image/*" style="display: none;" onchange="handleEditProfileImageSelect()">
+                
+                <div class="input-group">
+                    <label>Your Name</label>
+                    <input type="text" id="editName" placeholder="Your name">
+                </div>
+                
+                <div class="input-group">
+                    <label>New Password (leave blank to keep current)</label>
+                    <input type="password" id="editPassword" placeholder="New password">
+                </div>
+                
+                <div class="input-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="editConfirmPassword" placeholder="Confirm new password">
+                </div>
+                
+                <button class="btn btn-primary" id="saveProfileBtn" onclick="saveProfile()">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reveal Screen -->
+    <div id="revealScreen" class="screen reveal-screen">
+        <button class="back-btn" onclick="showDashboard()">&#8592; Back</button>
+        
+        <div class="hearts-bg" id="heartsBg"></div>
+        
+        <div class="reveal-header">
+            <h1>&#10084; Our Story &#10084;</h1>
+            <p>All the words we saved for this moment</p>
+        </div>
+        
+        <div id="revealContent">
+            <!-- Will be populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Date Picker Modal -->
+    <div id="dateModal" class="modal-overlay">
+        <div class="modal">
+            <h3>Set Reveal Date</h3>
+            <p class="subtitle">Choose when your messages will be revealed to each other</p>
+            
+            <div class="input-group">
+                <label>Reveal Date</label>
+                <input type="datetime-local" id="revealDateInput">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeDateModal()">Cancel</button>
+                <button class="btn btn-rose" onclick="saveRevealDate()">Save Date</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Microphone Permission Modal -->
+    <div id="micModal" class="modal-overlay">
+        <div class="modal">
+            <h3>&#127908; Microphone Access</h3>
+            <p class="subtitle">We need your permission to record voice messages</p>
+            
+            <div class="mic-permission-info">
+                <strong>How to enable:</strong>
+                <ul>
+                    <li>Click "Allow Microphone" below</li>
+                    <li>Your browser will ask for permission</li>
+                    <li>Click "Allow" in the browser prompt</li>
+                </ul>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeMicModal()">Cancel</button>
+                <button class="btn btn-rose" id="allowMicBtn" onclick="requestMicrophonePermission()">Allow Microphone</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===============================
+        // Supabase Configuration
+        // ===============================
+        const SUPABASE_URL = 'https://fcdknzzpgxbclkcfofly.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_8mKP91V0i9jTzi9zVBoKdQ_23NmBj89';
+        let supabaseClient;
+
+        // ===============================
+        // State Variables
+        // ===============================
+        let currentUser = null;
+        let selectedProfileImage = null;
+        let selectedEntryImage = null;
+        let selectedEntryAudio = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordingInterval = null;
+        let recordingStartTime = 0;
+        let countdownInterval = null;
+        let revealDate = null;
+        let microphonePermissionGranted = false;
+        let audioStream = null;
+
+        // ===============================
+        // Initialize
+        // ===============================
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                await initializeDatabase();
+                await checkExistingSession();
+                await updateRegistrationLink();
+                
+                // Check microphone permission status on load
+                checkMicrophonePermission();
+            } catch (err) {
+                console.error('Initialization error:', err);
+                showToast('Error initializing app. Please refresh.', 'error');
+            } finally {
+                // Hide loading overlay
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                }, 500);
+            }
+        });
+
+        // Initialize database tables if they don't exist
+        async function initializeDatabase() {
+            // Tables should be created in Supabase dashboard:
+            // 1. users: id (int8, primary), name (text), password (text), profile_image_url (text), created_at (timestamptz)
+            // 2. entries: id (int8, primary), user_id (int8), content (text), image_url (text), audio_url (text), created_at (timestamptz)
+            // 3. settings: id (int8, primary), reveal_date (timestamptz)
+            
+            // Load reveal date from Supabase
+            await loadRevealDateFromSupabase();
+        }
+
+        // Load reveal date from Supabase - this is the key fix for persistence
+        async function loadRevealDateFromSupabase() {
+            try {
+                const { data: settings, error } = await supabaseClient
+                    .from('settings')
+                    .select('*')
+                    .limit(1)
+                    .single();
+                
+                if (error && error.code !== 'PGRST116') {
+                    // PGRST116 means no rows returned, which is fine
+                    console.error('Error loading settings:', error);
+                    return;
+                }
+                
+                if (settings && settings.reveal_date) {
+                    revealDate = new Date(settings.reveal_date);
+                    console.log('Loaded reveal date from Supabase:', revealDate);
+                    startCountdown();
+                    updateRevealDateDisplay();
+                }
+            } catch (err) {
+                console.error('Error loading reveal date:', err);
+            }
+        }
+
+        async function checkExistingSession() {
+            const savedUserId = localStorage.getItem('love_capsule_user_id');
+            if (savedUserId) {
+                try {
+                    const { data: user, error } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('id', savedUserId)
+                        .single();
+                    
+                    if (user && !error) {
+                        currentUser = user;
+                        showDashboard();
+                    } else {
+                        // User not found, clear local storage
+                        localStorage.removeItem('love_capsule_user_id');
+                    }
+                } catch (err) {
+                    console.error('Session check error:', err);
+                    localStorage.removeItem('love_capsule_user_id');
+                }
+            }
+        }
+
+        async function updateRegistrationLink() {
+            try {
+                const { count, error } = await supabaseClient
+                    .from('users')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (error) {
+                    console.error('Error checking user count:', error);
+                    return;
+                }
+                
+                const createLink = document.getElementById('createAccountLink');
+                if (count >= 2) {
+                    createLink.style.display = 'none';
+                } else {
+                    createLink.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Error updating registration link:', err);
+            }
+        }
+
+        // ===============================
+        // Microphone Permission Handling
+        // ===============================
+        async function checkMicrophonePermission() {
+            try {
+                // Check if permissions API is available
+                if (navigator.permissions && navigator.permissions.query) {
+                    const result = await navigator.permissions.query({ name: 'microphone' });
+                    microphonePermissionGranted = result.state === 'granted';
+                    
+                    // Listen for permission changes
+                    result.addEventListener('change', () => {
+                        microphonePermissionGranted = result.state === 'granted';
+                        updateVoiceButtonState();
+                    });
+                }
+            } catch (err) {
+                // Permissions API not supported in this browser
+                console.log('Permissions API not available');
+            }
+            
+            updateVoiceButtonState();
+        }
+
+        function updateVoiceButtonState() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            if (!voiceBtn) return;
+            
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                voiceBtn.innerHTML = '&#127908; Not Supported';
+                voiceBtn.disabled = true;
+                voiceBtn.style.opacity = '0.5';
+                voiceBtn.title = 'Your browser does not support voice recording';
+            } else {
+                voiceBtn.innerHTML = '&#127908; Record Voice';
+                voiceBtn.disabled = false;
+                voiceBtn.style.opacity = '1';
+                voiceBtn.title = 'Click to record a voice message';
+            }
+        }
+
+        function showMicModal() {
+            document.getElementById('micModal').classList.add('active');
+        }
+
+        function closeMicModal() {
+            document.getElementById('micModal').classList.remove('active');
+        }
+
+        async function requestMicrophonePermission() {
+            const allowBtn = document.getElementById('allowMicBtn');
+            allowBtn.disabled = true;
+            allowBtn.innerHTML = '<span class="spinner"></span> Requesting...';
+            
+            try {
+                // Explicitly request microphone permission
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    }
+                });
+                
+                // Permission granted - store stream for later use
+                audioStream = stream;
+                microphonePermissionGranted = true;
+                
+                closeMicModal();
+                showToast('Microphone access granted! You can now record voice messages.', 'success');
+                
+                // Start recording immediately after permission is granted
+                startRecording(stream);
+                
+            } catch (err) {
+                console.error('Microphone permission error:', err);
+                
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    showToast('Microphone access denied. Please allow access in your browser settings and try again.', 'error');
+                } else if (err.name === 'NotFoundError') {
+                    showToast('No microphone found. Please connect a microphone and try again.', 'error');
+                } else if (err.name === 'NotReadableError') {
+                    showToast('Microphone is in use by another application. Please close other apps and try again.', 'error');
+                } else {
+                    showToast('Could not access microphone: ' + err.message, 'error');
+                }
+            } finally {
+                allowBtn.disabled = false;
+                allowBtn.innerHTML = 'Allow Microphone';
+            }
+        }
+
+        // Simple voice recording - matches working example pattern
+        async function handleVoiceButtonClick() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            
+            try {
+                // If already recording, stop
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    stopRecording();
+                    return;
+                }
+                
+                // Request microphone access - simple and direct like working example
+                currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Create MediaRecorder without specifying MIME type - let browser decide
+                mediaRecorder = new MediaRecorder(currentStream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstart = () => {
+                    voiceBtn.classList.add('recording');
+                    voiceBtn.innerHTML = '&#9632; Stop Recording';
+                    recordingStartTime = Date.now();
+                    updateRecordingTimer();
+                };
+                
+                mediaRecorder.onstop = () => {
+                    // Stop all tracks
+                    if (currentStream) {
+                        currentStream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    voiceBtn.classList.remove('recording');
+                    voiceBtn.innerHTML = '&#127908; Record Voice';
+                    
+                    if (audioChunks.length > 0) {
+                        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+                        selectedEntryAudio = new File([audioBlob], `voice_${Date.now()}.webm`, { type: audioBlob.type });
+                        
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        document.getElementById('entryAudioPreview').src = audioUrl;
+                        document.getElementById('audioPreviewArea').classList.add('active');
+                        
+                        showToast('Voice message recorded!', 'success');
+                    }
+                };
+                
+                mediaRecorder.onerror = (e) => {
+                    console.error('Recording error:', e);
+                    showToast('Recording error. Please try again.', 'error');
+                    stopRecording();
+                };
+                
+                // Start recording
+                mediaRecorder.start();
+                
+            } catch (err) {
+                console.error('Microphone error:', err);
+                voiceBtn.innerHTML = '&#127908; Record Voice';
+                
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    showToast('Microphone access denied. Please allow microphone access and try again.', 'error');
+                } else if (err.name === 'NotFoundError') {
+                    showToast('No microphone found. Please connect a microphone.', 'error');
+                } else {
+                    showToast('Could not access microphone: ' + err.message, 'error');
+                }
+            }
+        }
+        
+        let currentStream = null;
+
+        function stopRecording() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+            }
+            
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            
+            voiceBtn.innerHTML = '&#127908; Record Voice';
+            voiceBtn.classList.remove('recording');
+            
+            const recordingIndicator = document.getElementById('recordingIndicator');
+            if (recordingIndicator) {
+                recordingIndicator.style.display = 'none';
+            }
+            
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+                recordingInterval = null;
+            }
+        }
+        
+        function updateRecordingTimer() {
+            const recordingIndicator = document.getElementById('recordingIndicator');
+            if (recordingIndicator) {
+                recordingIndicator.style.display = 'block';
+            }
+            
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+            }
+            
+            recordingInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                const recordingTime = document.getElementById('recordingTime');
+                if (recordingTime) {
+                    recordingTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        // ===============================
+        // Toast Notifications
+        // ===============================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // ===============================
+        // Screen Navigation
+        // ===============================
+        function hideAllScreens() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        }
+
+        function showLoginScreen() {
+            hideAllScreens();
+            document.getElementById('loginScreen').classList.add('active');
+        }
+
+        function showRegisterScreen() {
+            hideAllScreens();
+            document.getElementById('registerScreen').classList.add('active');
+        }
+
+        async function showDashboard() {
+            hideAllScreens();
+            document.getElementById('dashboardScreen').classList.add('active');
+            
+            // Always reload reveal date from Supabase when showing dashboard
+            await loadRevealDateFromSupabase();
+            await loadDashboardData();
+        }
+
+        function showProfileScreen() {
+            hideAllScreens();
+            document.getElementById('profileScreen').classList.add('active');
+            loadProfileData();
+        }
+
+        async function showRevealScreen() {
+            hideAllScreens();
+            document.getElementById('revealScreen').classList.add('active');
+            
+            // Reload reveal date from Supabase to ensure accuracy
+            await loadRevealDateFromSupabase();
+            await loadRevealContent();
+        }
+
+        // ===============================
+        // Authentication
+        // ===============================
+        async function handleLogin() {
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            if (!password) {
+                showToast('Please enter your password', 'error');
+                return;
+            }
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="spinner"></span> Entering...';
+            
+            try {
+                const { data: user, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('password', password)
+                    .single();
+                
+                if (error || !user) {
+                    showToast('Invalid password. Please try again.', 'error');
+                    return;
+                }
+                
+                currentUser = user;
+                localStorage.setItem('love_capsule_user_id', user.id);
+                showToast('Welcome back, ' + user.name + '!');
+                showDashboard();
+            } catch (err) {
+                showToast('Error signing in. Please try again.', 'error');
+                console.error(err);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Enter Our Space';
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('registerName').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!name || !password) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (password.length < 4) {
+                showToast('Password must be at least 4 characters', 'error');
+                return;
+            }
+            
+            if (!selectedProfileImage) {
+                showToast('Please add a profile photo', 'error');
+                return;
+            }
+            
+            // Check if 2 users already exist
+            const { count } = await supabaseClient
+                .from('users')
+                .select('*', { count: 'exact', head: true });
+            
+            if (count >= 2) {
+                showToast('This capsule already has 2 people', 'error');
+                return;
+            }
+            
+            // Check if password already taken
+            const { data: existingUser } = await supabaseClient
+                .from('users')
+                .select('id')
+                .eq('password', password)
+                .single();
+            
+            if (existingUser) {
+                showToast('This password is already taken', 'error');
+                return;
+            }
+            
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="spinner"></span> Creating...';
+            
+            try {
+                // Upload profile image
+                const fileName = `profile_${Date.now()}_${selectedProfileImage.name}`;
+                const { error: uploadError } = await supabaseClient
+                    .storage
+                    .from('images')
+                    .upload(fileName, selectedProfileImage);
+                
+                if (uploadError) throw uploadError;
+                
+                const { data: urlData } = supabaseClient
+                    .storage
+                    .from('images')
+                    .getPublicUrl(fileName);
+                
+                // Create user
+                const { data: newUser, error: insertError } = await supabaseClient
+                    .from('users')
+                    .insert([{
+                        name: name,
+                        password: password,
+                        profile_image_url: urlData.publicUrl
+                    }])
+                    .select()
+                    .single();
+                
+                if (insertError) throw insertError;
+                
+                currentUser = newUser;
+                localStorage.setItem('love_capsule_user_id', newUser.id);
+                showToast('Welcome to our secret capsule, ' + name + '!');
+                triggerCelebration();
+                showDashboard();
+                await updateRegistrationLink();
+            } catch (err) {
+                showToast('Error creating account: ' + err.message, 'error');
+                console.error(err);
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = 'Create My Account';
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('love_capsule_user_id');
+            document.getElementById('loginPassword').value = '';
+            showLoginScreen();
+            showToast('See you soon!');
+        }
+
+        // ===============================
+        // Profile Image Handling
+        // ===============================
+        function handleProfileImageSelect() {
+            const fileInput = document.getElementById('profileImageInput');
+            const file = fileInput.files[0];
+            
+            if (file && file.type.startsWith('image/')) {
+                selectedProfileImage = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('profilePreview').src = e.target.result;
+                    document.getElementById('profilePreview').style.display = 'block';
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // ===============================
+        // Dashboard
+        // ===============================
+        async function loadDashboardData() {
+            if (!currentUser) return;
+            
+            // Update user info
+            document.getElementById('dashboardAvatar').src = currentUser.profile_image_url;
+            document.getElementById('dashboardName').textContent = currentUser.name;
+            
+            // Load entry counts
+            const { count: myCount } = await supabaseClient
+                .from('entries')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', currentUser.id);
+            
+            const { count: totalCount } = await supabaseClient
+                .from('entries')
+                .select('*', { count: 'exact', head: true });
+            
+            document.getElementById('myEntryCount').textContent = myCount || 0;
+            document.getElementById('partnerEntryCount').textContent = '?';
+            document.getElementById('totalEntryCount').textContent = totalCount || 0;
+            
+            // Update reveal date display
+            updateRevealDateDisplay();
+        }
+
+        function updateRevealDateDisplay() {
+            const displayEl = document.getElementById('revealDateDisplay');
+            const setDateBtn = document.getElementById('setDateBtn');
+            
+            if (revealDate) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                displayEl.textContent = revealDate.toLocaleDateString('en-US', options);
+                
+                // Hide the button once date is set
+                if (setDateBtn) {
+                    setDateBtn.style.display = 'none';
+                }
+            } else {
+                displayEl.textContent = 'No date set yet';
+                if (setDateBtn) {
+                    setDateBtn.style.display = 'inline-flex';
+                }
+            }
+        }
+
+        // ===============================
+        // Countdown Timer
+        // ===============================
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        function updateCountdown() {
+            if (!revealDate) {
+                document.getElementById('countDays').textContent = '--';
+                document.getElementById('countHours').textContent = '--';
+                document.getElementById('countMinutes').textContent = '--';
+                document.getElementById('countSeconds').textContent = '--';
+                return;
+            }
+            
+            const now = new Date();
+            const diff = revealDate - now;
+            
+            if (diff <= 0) {
+                document.getElementById('countDays').textContent = '0';
+                document.getElementById('countHours').textContent = '0';
+                document.getElementById('countMinutes').textContent = '0';
+                document.getElementById('countSeconds').textContent = '0';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('countDays').textContent = days;
+            document.getElementById('countHours').textContent = hours;
+            document.getElementById('countMinutes').textContent = minutes;
+            document.getElementById('countSeconds').textContent = seconds;
+        }
+
+        // ===============================
+        // Date Modal
+        // ===============================
+        function showDateModal() {
+            // If date is already set, don't allow changes
+            if (revealDate) {
+                showToast('The reveal date has already been set and cannot be changed.', 'error');
+                return;
+            }
+            document.getElementById('dateModal').classList.add('active');
+            
+            // Set minimum date to now
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('revealDateInput').min = now.toISOString().slice(0, 16);
+        }
+
+        function closeDateModal() {
+            document.getElementById('dateModal').classList.remove('active');
+        }
+
+        async function saveRevealDate() {
+            const dateInput = document.getElementById('revealDateInput').value;
+            
+            if (!dateInput) {
+                showToast('Please select a date', 'error');
+                return;
+            }
+            
+            const newDate = new Date(dateInput);
+            if (newDate <= new Date()) {
+                showToast('Please select a future date', 'error');
+                return;
+            }
+            
+            try {
+                // Check if settings row exists
+                const { data: existing, error: fetchError } = await supabaseClient
+                    .from('settings')
+                    .select('id')
+                    .limit(1)
+                    .single();
+                
+                if (fetchError && fetchError.code !== 'PGRST116') {
+                    throw fetchError;
+                }
+                
+                if (existing) {
+                    const { error: updateError } = await supabaseClient
+                        .from('settings')
+                        .update({ reveal_date: newDate.toISOString() })
+                        .eq('id', existing.id);
+                    
+                    if (updateError) throw updateError;
+                } else {
+                    const { error: insertError } = await supabaseClient
+                        .from('settings')
+                        .insert([{ reveal_date: newDate.toISOString() }]);
+                    
+                    if (insertError) throw insertError;
+                }
+                
+                revealDate = newDate;
+                startCountdown();
+                updateRevealDateDisplay();
+                closeDateModal();
+                showToast('Reveal date saved! The countdown begins...');
+                triggerCelebration();
+                
+                console.log('Reveal date saved to Supabase:', newDate.toISOString());
+            } catch (err) {
+                showToast('Error saving date: ' + err.message, 'error');
+                console.error('Error saving reveal date:', err);
+            }
+        }
+
+        // ===============================
+        // Entry Submission
+        // ===============================
+        function handleEntryImageSelect() {
+            const file = document.getElementById('entryImageInput').files[0];
+            if (file && file.type.startsWith('image/')) {
+                selectedEntryImage = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('entryImagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewArea').classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearEntryImage() {
+            selectedEntryImage = null;
+            document.getElementById('entryImageInput').value = '';
+            document.getElementById('imagePreviewArea').classList.remove('active');
+        }
+
+        function clearEntryAudio() {
+            selectedEntryAudio = null;
+            document.getElementById('audioPreviewArea').classList.remove('active');
+            
+            // Reset voice button if it was recording
+            const voiceBtn = document.getElementById('voiceBtn');
+            voiceBtn.innerHTML = '&#127908; Record Voice';
+            voiceBtn.classList.remove('recording');
+        }
+
+        async function submitEntry() {
+            const text = document.getElementById('entryText').value.trim();
+            
+            if (!text && !selectedEntryImage && !selectedEntryAudio) {
+                showToast('Please add some content to your message', 'error');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitEntryBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Sending...';
+            
+            try {
+                let imageUrl = null;
+                let audioUrl = null;
+                
+                // Upload image
+                if (selectedEntryImage) {
+                    const fileName = `entry_${Date.now()}_${selectedEntryImage.name}`;
+                    const { error: uploadError } = await supabaseClient
+                        .storage
+                        .from('images')
+                        .upload(fileName, selectedEntryImage);
+                    
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: urlData } = supabaseClient
+                        .storage
+                        .from('images')
+                        .getPublicUrl(fileName);
+                    
+                    imageUrl = urlData.publicUrl;
+                }
+                
+                // Upload audio
+                if (selectedEntryAudio) {
+                    const fileName = `audio_${Date.now()}_${selectedEntryAudio.name}`;
+                    const { error: uploadError } = await supabaseClient
+                        .storage
+                        .from('audio')
+                        .upload(fileName, selectedEntryAudio);
+                    
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: urlData } = supabaseClient
+                        .storage
+                        .from('audio')
+                        .getPublicUrl(fileName);
+                    
+                    audioUrl = urlData.publicUrl;
+                }
+                
+                // Save entry
+                const { error: insertError } = await supabaseClient
+                    .from('entries')
+                    .insert([{
+                        user_id: currentUser.id,
+                        content: text || '',
+                        image_url: imageUrl,
+                        audio_url: audioUrl
+                    }]);
+                
+                if (insertError) throw insertError;
+                
+                // Clear form
+                document.getElementById('entryText').value = '';
+                clearEntryImage();
+                clearEntryAudio();
+                
+                showToast('Your note has been saved to the capsule!');
+                triggerCelebration();
+                await loadDashboardData();
+            } catch (err) {
+                showToast('Error saving entry: ' + err.message, 'error');
+                console.error(err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '&#10084; Send to the Capsule';
+            }
+        }
+
+        // ===============================
+        // Profile Management
+        // ===============================
+        let editProfileImage = null;
+
+        function loadProfileData() {
+            document.getElementById('editName').value = currentUser.name;
+            document.getElementById('editProfilePreview').src = currentUser.profile_image_url;
+            document.getElementById('editProfilePreview').style.display = 'block';
+            document.getElementById('editUploadPlaceholder').style.display = 'none';
+            document.getElementById('editPassword').value = '';
+            document.getElementById('editConfirmPassword').value = '';
+            editProfileImage = null;
+        }
+
+        function handleEditProfileImageSelect() {
+            const file = document.getElementById('editProfileImageInput').files[0];
+            if (file && file.type.startsWith('image/')) {
+                editProfileImage = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('editProfilePreview').src = e.target.result;
+                    document.getElementById('editProfilePreview').style.display = 'block';
+                    document.getElementById('editUploadPlaceholder').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function saveProfile() {
+            const name = document.getElementById('editName').value.trim();
+            const newPassword = document.getElementById('editPassword').value;
+            const confirmPassword = document.getElementById('editConfirmPassword').value;
+            
+            if (!name) {
+                showToast('Name cannot be empty', 'error');
+                return;
+            }
+            
+            if (newPassword && newPassword !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (newPassword && newPassword.length < 4) {
+                showToast('Password must be at least 4 characters', 'error');
+                return;
+            }
+            
+            // Check if new password is taken by other user
+            if (newPassword) {
+                const { data: existingUser } = await supabaseClient
+                    .from('users')
+                    .select('id')
+                    .eq('password', newPassword)
+                    .neq('id', currentUser.id)
+                    .single();
+                
+                if (existingUser) {
+                    showToast('This password is already taken', 'error');
+                    return;
+                }
+            }
+            
+            const saveBtn = document.getElementById('saveProfileBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+            
+            try {
+                let profileImageUrl = currentUser.profile_image_url;
+                
+                // Upload new image if selected
+                if (editProfileImage) {
+                    // Delete old image
+                    if (currentUser.profile_image_url) {
+                        const oldFileName = currentUser.profile_image_url.split('/').pop();
+                        await supabaseClient.storage.from('images').remove([oldFileName]);
+                    }
+                    
+                    const fileName = `profile_${Date.now()}_${editProfileImage.name}`;
+                    const { error: uploadError } = await supabaseClient
+                        .storage
+                        .from('images')
+                        .upload(fileName, editProfileImage);
+                    
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: urlData } = supabaseClient
+                        .storage
+                        .from('images')
+                        .getPublicUrl(fileName);
+                    
+                    profileImageUrl = urlData.publicUrl;
+                }
+                
+                // Update user
+                const updateData = {
+                    name: name,
+                    profile_image_url: profileImageUrl
+                };
+                
+                if (newPassword) {
+                    updateData.password = newPassword;
+                }
+                
+                const { data: updatedUser, error: updateError } = await supabaseClient
+                    .from('users')
+                    .update(updateData)
+                    .eq('id', currentUser.id)
+                    .select()
+                    .single();
+                
+                if (updateError) throw updateError;
+                
+                currentUser = updatedUser;
+                showToast('Profile updated successfully!');
+                showDashboard();
+            } catch (err) {
+                showToast('Error saving profile: ' + err.message, 'error');
+                console.error(err);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = 'Save Changes';
+            }
+        }
+
+        // ===============================
+        // Reveal Screen
+        // ===============================
+        async function loadRevealContent() {
+            const contentEl = document.getElementById('revealContent');
+            
+            // Check if reveal date has passed
+            if (!revealDate || new Date() < revealDate) {
+                contentEl.innerHTML = `
+                    <div class="locked-message">
+                        <div class="lock-icon">&#128274;</div>
+                        <h3>Messages are Still Hidden</h3>
+                        <p>${revealDate 
+                            ? 'Come back on ' + revealDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + ' to see all your notes.'
+                            : 'Set a reveal date to unlock your messages on that special day.'
+                        }</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Create floating hearts
+            createFloatingHearts();
+            
+            // Load all entries
+            try {
+                const { data: entries, error } = await supabaseClient
+                    .from('entries')
+                    .select('*, users(name, profile_image_url)')
+                    .order('created_at', { ascending: true });
+                
+                if (error) throw error;
+                
+                if (!entries || entries.length === 0) {
+                    contentEl.innerHTML = `
+                        <div class="locked-message">
+                            <div class="lock-icon">&#128172;</div>
+                            <h3>No Messages Yet</h3>
+                            <p>Start writing notes to fill this space with memories!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Render conversation
+                let html = '<div class="conversation-list">';
+                
+                entries.forEach((entry, index) => {
+                    const isCurrentUser = entry.user_id === currentUser.id;
+                    const user = entry.users;
+                    const date = new Date(entry.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    html += `
+                        <div class="message-item ${isCurrentUser ? 'right' : ''}" style="animation-delay: ${index * 0.1}s">
+                            <img src="${user.profile_image_url}" class="message-avatar" alt="${user.name}">
+                            <div class="message-content">
+                                <div class="message-author">${user.name}</div>
+                                ${entry.content ? `<div class="message-text">${escapeHtml(entry.content)}</div>` : ''}
+                                ${entry.image_url ? `<img src="${entry.image_url}" class="message-image" onclick="window.open('${entry.image_url}', '_blank')">` : ''}
+                                ${entry.audio_url ? `<audio src="${entry.audio_url}" class="message-audio" controls></audio>` : ''}
+                                <div class="message-time">${date}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                contentEl.innerHTML = html;
+                
+                // Trigger celebration for reveal
+                triggerCelebration();
+                
+            } catch (err) {
+                showToast('Error loading messages: ' + err.message, 'error');
+                console.error(err);
+            }
+        }
+
+        function createFloatingHearts() {
+            const container = document.getElementById('heartsBg');
+            container.innerHTML = '';
+            
+            const hearts = ['&#10084;', '&#10083;', '&#9825;'];
+            
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 15 + 's';
+                heart.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        // ===============================
+        // Utility Functions
+        // ===============================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
+
+        function triggerCelebration() {
+            const celebration = document.getElementById('celebration');
+            celebration.classList.add('active');
+            celebration.innerHTML = '';
+            
+            const colors = ['#D4A5A5', '#C4B5A4', '#F0E0E0', '#E8DFD4', '#9C8B7A'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+                confetti.style.width = (5 + Math.random() * 10) + 'px';
+                confetti.style.height = (5 + Math.random() * 10) + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                celebration.appendChild(confetti);
+            }
+            
+            setTimeout(() => {
+                celebration.classList.remove('active');
+            }, 4000);
+        }
+
+        // Enter key support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                const activeScreen = document.querySelector('.screen.active');
+                if (activeScreen && activeScreen.id === 'loginScreen') {
+                    e.preventDefault();
+                    handleLogin();
+                }
+            }
+        });
+
+        // Close modals on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDateModal();
+                closeMicModal();
+            }
+        });
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
